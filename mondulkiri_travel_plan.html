@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蒙多基里旅行计划 - by 鑫</title>
+    <!-- 添加网站图标 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏔️</text></svg>">
+    <!-- 使用更可靠的CDN加载Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 30px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .trip-overview {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .overview-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .overview-item h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .map-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .map-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* 确保地图容器有显式的尺寸和可见性 */
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1; /* 确保地图在正确的层级 */
+        }
+
+        .day-schedule {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .day-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .day-header h2 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .activity {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 5px solid #28a745;
+            transition: transform 0.3s ease;
+        }
+
+        .activity:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .activity-time {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .activity-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .activity-title:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+
+        .activity-title::after {
+            content: "📍";
+            margin-left: 8px;
+            font-size: 0.9em;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .activity-title:hover::after {
+            opacity: 1;
+        }
+
+        .activity-description {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .activity-details {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .food-recommendations {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .food-item {
+            background: #fff8dc;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ffa500;
+        }
+
+        .food-item h3 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+        }
+
+        .tips-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tip-item {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .tip-item strong {
+            color: #28a745;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #map {
+                height: 400px;
+            }
+        }
+
+        .section-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        /* 页脚样式 */
+        footer {
+            background: rgba(0,0,0,0.8);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 30px;
+        }
+
+        footer h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        footer p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        footer a {
+            color: #a3bffa;
+            text-decoration: none;
+        }
+
+        footer .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            text-align: left;
+        }
+
+        footer .divider {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* 地图浮动按钮样式 */
+        .map-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            padding: 10px;
+            display: none;
+        }
+
+        .map-controls button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .map-controls button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        /* 添加动态效果 */
+        .highlight-location {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        /* 二级地图样式 */
+        #detail-map {
+            height: 300px;
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none; /* 初始隐藏 */
+        }
+    </style>
+    <!-- 使用更可靠的CDN预加载Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏔️ 蒙多基里探险之旅</h1>
+            <p> 金边 → 蒙多基里 | 2天1夜精彩行程 - by 鑫</p>
+        </div>
+
+        <div class="trip-overview">
+            <h2 class="section-title">✅ 行程概览</h2>
+            <div class="overview-grid">
+                <div class="overview-item">
+                    <h3>🚐 出发时间</h3>
+                    <p>周五晚上 10:00<br>从金边出发</p>
+                </div>
+                <div class="overview-item">
+                    <h3>🏨 住宿安排</h3>
+                    <p>Pidoma Resort<br>周六晚入住别墅</p>
+                </div>
+                <div class="overview-item">
+                    <h3>⏰ 返程时间</h3>
+                    <p>周日晚上 6:00<br>返回金边</p>
+                </div>
+                <div class="overview-item">
+                    <h3>👥 团队规模</h3>
+                    <p>十多人小团<br>包车小巴士</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <h2>🗺️ 旅行路线图</h2>
+            <div id="map"></div>
+        </div>
+
+        <div class="day-schedule">
+            <div class="day-header">
+                <h2>🗓️ 周六：自然风光与野象保护</h2>
+                <p>探索瀑布奇观，感受大自然的魅力</p>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕖 7:00</div>
+                <div class="activity-title">抵达蒙多基里，享用早餐</div>
+                <div class="activity-description">经过一夜车程，在Sen Monorom镇中心补充能量</div>
+                <div class="activity-details">
+                    <strong>推荐早餐地点：</strong><br>
+                    • Hefalump Café（西式+柬式早餐）<br>
+                    • 酒店简单用餐
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕘 9:00</div>
+                <div class="activity-title">前往布斯拉瀑布（Bou Sra Waterfall）</div>
+                <div class="activity-description">蒙多基里最著名的瀑布，三层结构壮观景色</div>
+                <div class="activity-details">
+                    <strong>体验亮点：</strong><br>
+                    • 在第二层平台感受水雾<br>
+                    • 徒步森林小路<br>
+                    • 团体拍照胜地<br>
+                    • 车程约1小时，门票5000-10000瑞尔/人
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕛 12:30</div>
+                <div class="activity-title">瀑布附近午餐</div>
+                <div class="activity-description">品尝地道高原风味美食</div>
+                <div class="activity-details">
+                    <strong>推荐美食：</strong><br>
+                    • 烤鸡配当地香料<br>
+                    • 竹筒饭（香糯可口）<br>
+                    • 野菜汤<br>
+                    💡 人多可提前联系摊主准备
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕑 14:00</div>
+                <div class="activity-title">大象保护中心或森林徒步</div>
+                <div class="activity-description">与大象近距离接触，体验生态保护</div>
+                <div class="activity-details">
+                    <strong>选择A：</strong>蒙多基里大象保护中心（Elephant Valley Project）<br>
+                    • 观察被拯救的大象<br>
+                    • "陪大象散步"体验<br>
+                    • 需要提前预约<br><br>
+                    <strong>选择B：</strong>森林徒步体验<br>
+                    • 当地导游带队<br>
+                    • 咖啡林探索<br>
+                    • 野生动植物观察
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕓 17:00</div>
+                <div class="activity-title">回酒店休息，欣赏夕阳</div>
+                <div class="activity-description">在Pidoma Resort放松身心，享受山丘日落</div>
+                <div class="activity-details">
+                    <strong>休闲活动：</strong><br>
+                    • 观赏Sen Monorom山丘日落<br>
+                    • 度假村游泳池<br>
+                    • 团队拍照时间<br>
+                    • 自由聊天放松
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕖 18:30</div>
+                <div class="activity-title">丰盛晚餐时光</div>
+                <div class="activity-description">选择户外BBQ或当地餐厅用餐</div>
+                <div class="activity-details">
+                    <strong>选择A：</strong>Pidoma Resort户外BBQ套餐（适合十多人聚餐）<br>
+                    <strong>选择B：</strong>推荐餐厅<br>
+                    • Nature Lodge Restaurant（森林氛围+欧式美食）<br>
+                    • Chomnor Meas Restaurant（柬式合菜，性价比高）
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕘 20:30</div>
+                <div class="activity-title">篝火夜晚 / 卡拉OK时光</div>
+                <div class="activity-description">团队联谊，星空下的欢声笑语</div>
+                <div class="activity-details">
+                    <strong>夜晚活动：</strong><br>
+                    • 度假村篝火party<br>
+                    • 卡拉OK欢唱<br>
+                    • 星空拍照<br>
+                    • 品酒聊天
+                </div>
+            </div>
+        </div>
+
+        <div class="day-schedule">
+            <div class="day-header">
+                <h2>🗓️ 周日：文化探索与轻松返程</h2>
+                <p>深入了解当地文化，完美收官</p>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕖 8:00</div>
+                <div class="activity-title">度假村早餐</div>
+                <div class="activity-description">在美丽的自然环境中享用营养早餐</div>
+                <div class="activity-details">
+                    在度假村内享用丰盛早餐，为新一天的探索做好准备
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕘 9:00</div>
+                <div class="activity-title">探访布努昂族村庄</div>
+                <div class="activity-description">深入了解当地少数民族的传统文化</div>
+                <div class="activity-details">
+                    <strong>文化体验：</strong><br>
+                    • 了解Bunong族生活方式<br>
+                    • 观看传统手工艺品制作<br>
+                    • 请当地导游讲解民族历史<br>
+                    • 购买正宗手工纪念品
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕚 11:00</div>
+                <div class="activity-title">市中心打卡 & 购物</div>
+                <div class="activity-description">参观大象雕像地标，采购当地特产</div>
+                <div class="activity-details">
+                    <strong>必打卡：</strong><br>
+                    • 蒙多基里圆环大象雕像<br>
+                    • 本地干果市场<br>
+                    • 野生蜂蜜专卖<br>
+                    • 手工纪念品集市
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕛 12:30</div>
+                <div class="activity-title">Green House Restaurant午餐</div>
+                <div class="activity-description">在舒适环境中享用中西合璧美食</div>
+                <div class="activity-details">
+                    <strong>菜品推荐：</strong><br>
+                    • 西式汉堡、意大利面<br>
+                    • 柬式炒饭、汤品<br>
+                    • 团体用餐，环境干净舒适
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕑 14:00</div>
+                <div class="activity-title">下午轻松活动（可选）</div>
+                <div class="activity-description">根据团队喜好选择最后的活动</div>
+                <div class="activity-details">
+                    <strong>可选活动：</strong><br>
+                    • 参观Mondulkiri Coffee咖啡庄园<br>
+                    • 短途森林观景台<br>
+                    • 回酒店泳池放松<br>
+                    • 最后的团体合影
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="activity-time">🕔 17:00</div>
+                <div class="activity-title">准备返程</div>
+                <div class="activity-description">整装待发，踏上回金边的旅程</div>
+                <div class="activity-details">
+                    <strong>返程准备：</strong><br>
+                    • 轻食外带（面包、果汁、炸鸡）<br>
+                    • 18:00整装出发返回金边<br>
+                    • 预计深夜抵达金边
+                </div>
+            </div>
+        </div>
+
+        <div class="food-recommendations">
+            <h2 class="section-title">🍽️ 美食推荐</h2>
+            <div class="food-grid">
+                <div class="food-item">
+                    <h3>🥩 必尝特色菜</h3>
+                    <p><strong>Phnong烤肉</strong> - 当地原住民特色烤肉，香料独特</p>
+                    <p><strong>竹筒糯米饭</strong> - 用竹筒蒸制，香糯可口</p>
+                    <p><strong>森林蜂蜜</strong> - 野生蜂蜜，蒙多基里特产</p>
+                    <p><strong>烤河鱼</strong> - 新鲜河鱼配当地香料</p>
+                </div>
+                <div class="food-item">
+                    <h3>🏪 推荐餐厅</h3>
+                    <p><strong>Hefalump Café</strong> - 镇中心，西柬结合</p>
+                    <p><strong>Nature Lodge Restaurant</strong> - 森林氛围，欧式美食</p>
+                    <p><strong>Green House Restaurant</strong> - 团体用餐首选</p>
+                    <p><strong>当地市场小摊</strong> - 最地道的味道</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tips-section">
+            <h2 class="section-title">🎯 贴心提醒</h2>
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <strong>🌦️ 天气装备</strong><br>
+                    6月为雨季，带防水衣物、防滑鞋、雨伞
+                </div>
+                <div class="tip-item">
+                    <strong>🧢 防护用品</strong><br>
+                    帽子、防晒霜、防蚊液、保温瓶必备
+                </div>
+                <div class="tip-item">
+                    <strong>👙 娱乐装备</strong><br>
+                    泳衣、相机、无人机（拍瀑布、象群）
+                </div>
+                <div class="tip-item">
+                    <strong>🚐 交通贴士</strong><br>
+                    选带麦克风音响的小巴，增加旅途气氛
+                </div>
+                <div class="tip-item">
+                    <strong>💰 现金准备</strong><br>
+                    多准备现金，很多地方不能刷卡
+                </div>
+                <div class="tip-item">
+                    <strong>🎁 礼品建议</strong><br>
+                    带些小礼品给村民（文具、糖果等）
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加页脚信息 -->
+    <footer style="background: rgba(0,0,0,0.8); color: white; text-align: center; padding: 20px 0; margin-top: 30px;">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; text-align: left;">
+                <div>
+                    <h3 style="color: #667eea; margin-bottom: 15px;">联系我们</h3>
+                    <p>📞 电话: +855 9x xxx xxxx</p>
+                    <p>✉️ 邮箱: travel@mondulkiri-tour.com</p>
+                    <p>🌐 微信: MondulkiriTravel</p>
+                </div>
+                <div>
+                    <h3 style="color: #667eea; margin-bottom: 15px;">紧急联系</h3>
+                    <p>🚑 医疗救助: +855 9x xxx xxxx</p>
+                    <p>🛂 柬埔寨旅游警察: +855 9x xxx xxxx</p>
+                    <p>🇨🇳 中国大使馆: +855 9x xxx xxxx</p>
+                </div>
+                <div>
+                    <h3 style="color: #667eea; margin-bottom: 15px;">实用链接</h3>
+                    <p><a href="#" style="color: #a3bffa; text-decoration: none;">✓ 蒙多基里天气预报</a></p>
+                    <p><a href="#" style="color: #a3bffa; text-decoration: none;">✓ 货币兑换参考</a></p>
+                    <p><a href="#" style="color: #a3bffa; text-decoration: none;">✓ 旅游保险推荐</a></p>
+                </div>
+            </div>
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <p>© 2025 蒙多基里探险旅行 | 十人小团包车游 | 行程规划版本: v1.2</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 全局变量，便于从外部访问
+        let travelMap;
+        let mapMarkers = {};
+        let activeMarker = null;
+
+        // 创建一个全局函数以便稍后调用
+        function initMap() {
+            // 检查Leaflet库是否已加载
+            if (typeof L === 'undefined') {
+                console.error('Leaflet库未正确加载');
+                return;
+            }
+
+            // 检查地图容器是否存在
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) {
+                console.error('找不到地图容器');
+                return;
+            }
+
+            try {
+                // 初始化地图
+                travelMap = L.map('map', {
+                    zoomControl: true, // 确保缩放控件存在
+                    attributionControl: true // 确保属性控件存在
+                }).setView([12.4545, 107.2067], 9);
+                
+                // 添加瓦片层 - 使用多个备选地图源增加可靠性
+                const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors'
+                });
+                
+                const cartoDb = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors, © CARTO'
+                });
+                
+                // 尝试添加第一个瓦片层，如果失败则使用第二个
+                try {
+                    osm.addTo(travelMap);
+                } catch (e) {
+                    console.warn('无法加载OpenStreetMap瓦片，尝试备用瓦片源');
+                    cartoDb.addTo(travelMap);
+                }
+                
+                // 确保地图在容器中正确渲染
+                setTimeout(function() {
+                    travelMap.invalidateSize();
+                }, 100);
+
+                // 定义地点坐标和信息
+                const locations = [
+                    {
+                        id: "phnom_penh",
+                        name: "金边 (Phnom Penh)",
+                        coords: [11.5564, 104.9282],
+                        type: "start",
+                        description: "出发点 - 周五晚上10:00",
+                        icon: "🚐"
+                    },
+                    {
+                        id: "sen_monorom",
+                        name: "Sen Monorom 镇中心",
+                        coords: [12.4545, 107.2067],
+                        type: "city",
+                        description: "蒙多基里省府，早餐地点",
+                        icon: "🏘️"
+                    },
+                    {
+                        id: "bou_sra_waterfall",
+                        name: "Bou Sra Waterfall",
+                        coords: [12.4167, 107.3167],
+                        type: "attraction",
+                        description: "著名三层瀑布，周六上午游览",
+                        icon: "💦"
+                    },
+                    {
+                        id: "pidoma_resort",
+                        name: "Pidoma Resort",
+                        coords: [12.4333, 107.1833],
+                        type: "hotel",
+                        description: "住宿地点 - 周六晚",
+                        icon: "🏨"
+                    },
+                    {
+                        id: "elephant_valley",
+                        name: "Elephant Valley Project",
+                        coords: [12.4000, 107.1500],
+                        type: "attraction",
+                        description: "大象保护中心，周六下午",
+                        icon: "🐘"
+                    },
+                    {
+                        id: "bunong_village",
+                        name: "Bunong Village",
+                        coords: [12.4800, 107.2200],
+                        type: "culture",
+                        description: "布努昂族村庄，周日上午",
+                        icon: "🏘️"
+                    }
+                ];
+
+                // 为不同类型的地点创建不同颜色的标记
+                const iconColors = {
+                    start: '#FF6B6B',
+                    city: '#4ECDC4',
+                    attraction: '#45B7D1',
+                    hotel: '#96CEB4',
+                    culture: '#FFEAA7'
+                };
+
+                // 添加地点标记
+                locations.forEach(location => {
+                    const marker = L.circleMarker(location.coords, {
+                        color: iconColors[location.type],
+                        fillColor: iconColors[location.type],
+                        fillOpacity: 0.8,
+                        radius: 8,
+                        weight: 3
+                    }).addTo(travelMap);
+
+                    // 存储标记，方便后续引用
+                    mapMarkers[location.id] = {
+                        marker: marker,
+                        coords: location.coords,
+                        name: location.name,
+                        type: location.type
+                    };
+
+                    // 添加弹出信息
+                    marker.bindPopup(`
+                        <div style="text-align: center; padding: 10px;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">${location.icon}</div>
+                            <h3 style="margin: 0 0 8px 0; color: #333;">${location.name}</h3>
+                            <p style="margin: 0; color: #666; font-size: 14px;">${location.description}</p>
+                        </div>
+                    `);
+                });
+
+                // 创建路线路径
+                const routeCoords = [
+                    [11.5564, 104.9282], // 金边
+                    [12.4545, 107.2067], // Sen Monorom
+                    [12.4167, 107.3167], // Bou Sra Waterfall
+                    [12.4333, 107.1833], // Pidoma Resort
+                    [12.4000, 107.1500], // Elephant Valley
+                    [12.4800, 107.2200], // Bunong Village
+                    [12.4545, 107.2067], // 回到Sen Monorom
+                    [11.5564, 104.9282]  // 返回金边
+                ];
+
+                // 添加路线
+                const polyline = L.polyline(routeCoords, {
+                    color: '#667eea',
+                    weight: 4,
+                    opacity: 0.8,
+                    dashArray: '10, 10'
+                }).addTo(travelMap);
+
+                // 调整地图视图以显示所有标记
+                const group = new L.featureGroup(locations.map(loc => 
+                    L.circleMarker(loc.coords)
+                ));
+                travelMap.fitBounds(group.getBounds().pad(0.1));
+
+                // 添加图例
+                const legend = L.control({position: 'bottomright'});
+                legend.onAdd = function (map) {
+                    const div = L.DomUtil.create('div', 'info legend');
+                    div.innerHTML = `
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                            <h4 style="margin: 0 0 10px 0; color: #333;">地点类型</h4>
+                            <div style="margin: 5px 0;"><span style="color: ${iconColors.start}; font-size: 16px;">●</span> 出发/返回点</div>
+                            <div style="margin: 5px 0;"><span style="color: ${iconColors.city}; font-size: 16px;">●</span> 城镇中心</div>
+                            <div style="margin: 5px 0;"><span style="color: ${iconColors.attraction}; font-size: 16px;">●</span> 景点</div>
+                            <div style="margin: 5px 0;"><span style="color: ${iconColors.hotel}; font-size: 16px;">●</span> 住宿</div>
+                            <div style="margin: 5px 0;"><span style="color: ${iconColors.culture}; font-size: 16px;">●</span> 文化体验</div>
+                        </div>
+                    `;
+                    return div;
+                };
+                legend.addTo(travelMap);
+                
+                // 添加返回全景的控制按钮
+                const resetControl = L.control({position: 'topright'});
+                resetControl.onAdd = function(map) {
+                    const div = L.DomUtil.create('div', 'reset-control');
+                    div.innerHTML = '<button style="padding: 8px 12px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">查看全部路线</button>';
+                    
+                    div.onclick = function() {
+                        // 重置地图视图
+                        travelMap.fitBounds(group.getBounds().pad(0.1));
+                        
+                        // 移除所有突出显示
+                        resetAllMarkers();
+                    };
+                    
+                    return div;
+                };
+                resetControl.addTo(travelMap);
+                
+                console.log('地图初始化成功');
+
+                // 初始化完成后，添加点击事件到行程标题
+                setupActivityTitles();
+                
+            } catch (error) {
+                console.error('地图初始化失败:', error);
+                // 在地图容器中显示错误信息
+                mapContainer.innerHTML = '<div style="color: red; text-align: center; padding: 20px;">地图加载失败，请刷新页面重试</div>';
+            }
+        }
+
+        // 添加跳转到地图位置的功能
+        function navigateToLocation(locationId) {
+            if (!travelMap || !mapMarkers[locationId]) {
+                console.error('地图或位置标记未找到:', locationId);
+                return;
+            }
+            
+            // 重置所有标记的样式
+            resetAllMarkers();
+            
+            // 获取位置数据
+            const location = mapMarkers[locationId];
+            
+            // 平滑移动地图到该位置
+            travelMap.flyTo(location.coords, 13, {
+                animate: true,
+                duration: 1.5
+            });
+            
+            // 突出显示该标记
+            highlightMarker(locationId);
+            
+            // 打开该位置的弹出窗口
+            location.marker.openPopup();
+            
+            // 记录活动标记
+            activeMarker = locationId;
+            
+            // 平滑滚动到地图区域
+            document.querySelector('.map-container').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+        
+        // 重置所有标记样式
+        function resetAllMarkers() {
+            for (let id in mapMarkers) {
+                const markerInfo = mapMarkers[id];
+                markerInfo.marker.setStyle({
+                    radius: 8,
+                    fillOpacity: 0.8,
+                    weight: 3
+                });
+                // 关闭所有弹窗
+                markerInfo.marker.closePopup();
+            }
+        }
+        
+        // 突出显示特定标记
+        function highlightMarker(locationId) {
+            if (mapMarkers[locationId]) {
+                mapMarkers[locationId].marker.setStyle({
+                    radius: 12,
+                    fillOpacity: 1,
+                    weight: 4
+                });
+            }
+        }
+        
+        // 设置行程标题点击事件
+        function setupActivityTitles() {
+            // 添加地点ID到活动标题
+            const activityLocationMap = {
+                "抵达蒙多基里，享用早餐": "sen_monorom",
+                "前往布斯拉瀑布（Bou Sra Waterfall）": "bou_sra_waterfall",
+                "瀑布附近午餐": "bou_sra_waterfall",
+                "大象保护中心或森林徒步": "elephant_valley",
+                "回酒店休息，欣赏夕阳": "pidoma_resort",
+                "丰盛晚餐时光": "pidoma_resort",
+                "篝火夜晚 / 卡拉OK时光": "pidoma_resort",
+                "度假村早餐": "pidoma_resort",
+                "探访布努昂族村庄": "bunong_village",
+                "市中心打卡 & 购物": "sen_monorom",
+                "Green House Restaurant午餐": "sen_monorom",
+                "下午轻松活动（可选）": "sen_monorom",
+                "准备返程": "phnom_penh"
+            };
+            
+            // 获取所有活动标题
+            const activityTitles = document.querySelectorAll('.activity-title');
+            
+            // 为每个活动标题添加点击事件
+            activityTitles.forEach(title => {
+                const titleText = title.textContent;
+                const locationId = activityLocationMap[titleText];
+                
+                if (locationId) {
+                    // 添加数据属性以便于识别
+                    title.setAttribute('data-location', locationId);
+                    
+                    // 添加点击事件
+                    title.addEventListener('click', function() {
+                        navigateToLocation(locationId);
+                    });
+                    
+                    // 添加鼠标悬停效果
+                    title.title = "点击查看地图位置";
+                }
+            });
+        }
+
+        // 添加多种事件监听，确保地图能在页面加载完成后初始化
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(initMap, 1);
+        } else {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(initMap, 1);
+            });
+        }
+        
+        // 添加一个备用初始化方法，以防前面的方法失败
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const mapElement = document.getElementById('map');
+                // 检查地图是否已经初始化
+                if (mapElement && mapElement.childElementCount === 0) {
+                    console.log('使用备用方法初始化地图');
+                    initMap();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
