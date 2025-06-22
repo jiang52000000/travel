@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>蒙多基里旅行计划2.0 - by 鑫</title>
+    <title>蒙多基里旅行计划2.1 - by 鑫</title>
     <!-- 添加网站图标 -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏔️</text></svg>">
     <!-- 使用Google Maps API -->
@@ -209,6 +209,30 @@
             color: #555;
         }
 
+        /* 活动图片样式 */
+        .activity-image {
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .activity-image:hover {
+            transform: scale(1.02);
+        }
+
+        .image-caption {
+            font-size: 0.8em;
+            color: #666;
+            text-align: center;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
         .food-recommendations {
             background: white;
             padding: 25px;
@@ -369,12 +393,201 @@
             background: #764ba2;
             transform: translateY(-2px);
         }
+
+        /* 图片轮播样式 */
+        .hero-slider {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin-bottom: 30px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-content {
+            text-align: center;
+            color: white;
+            z-index: 2;
+        }
+
+        .slide-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+            animation: slideInFromTop 1s ease-out;
+        }
+
+        .slide-subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+            animation: slideInFromBottom 1s ease-out 0.3s both;
+        }
+
+        .slider-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 3;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInFromBottom {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-slider {
+                height: 300px;
+            }
+            
+            .slide-title {
+                font-size: 2em;
+            }
+            
+            .slide-subtitle {
+                font-size: 1.1em;
+            }
+
+            .activity-image {
+                height: 150px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- 图片轮播 -->
+        <div class="hero-slider">
+            <div class="slider-container">
+                <div class="slide active" style="background-image: url('https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/62/d8/e1/asurajourney.jpg?w=1400&h=-1&s=1');">
+                    <div class="slide-overlay">
+                        <div class="slide-content">
+                            <div class="slide-title">🏔️ 蒙多基里壮美山景</div>
+                            <div class="slide-subtitle">体验柬埔寨最美的高原风光</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slide" style="background-image: url('https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcRa_dEUmC-XK6AlCpojtSzXxy40TUNhDO4QeDRR6CBbTbgg9cRg5vKPmDBTTqGzCF9iFhjZivWoolpWto34r60jSaYROfTnM-kMfafG5hw');">
+                    <div class="slide-overlay">
+                        <div class="slide-content">
+                            <div class="slide-title">💦 布斯拉瀑布奇观</div>
+                            <div class="slide-subtitle">三层瀑布的壮丽景色</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slide" style="background-image: url('https://cdn.cc-times.com/cc-times.com/media/8982/large/_%E6%9F%AC%E4%B8%AD%E6%97%B6%E5%A0%B1-%E6%97%85%E9%81%8A_(11).jpg');">
+                    <div class="slide-overlay">
+                        <div class="slide-content">
+                            <div class="slide-title">🐘 野象保护中心</div>
+                            <div class="slide-subtitle">近距离观察亚洲象的自然行为</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');">
+                    <div class="slide-overlay">
+                        <div class="slide-content">
+                            <div class="slide-title">🌅 Sen Monorom日出</div>
+                            <div class="slide-subtitle">高原小镇的绚烂朝霞</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80');">
+                    <div class="slide-overlay">
+                        <div class="slide-content">
+                            <div class="slide-title">🌿 原始森林探索</div>
+                            <div class="slide-subtitle">感受蒙多基里的生态之美</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slider-indicators">
+                <div class="indicator active" data-slide="0"></div>
+                <div class="indicator" data-slide="1"></div>
+                <div class="indicator" data-slide="2"></div>
+                <div class="indicator" data-slide="3"></div>
+                <div class="indicator" data-slide="4"></div>
+            </div>
+        </div>
+
         <div class="header">
-            <h1>🏔️ 蒙多基里探险之旅2.0</h1>
+            <h1>🏔️ 蒙多基里探险之旅2.1</h1>
             <p> 金边 → 蒙多基里 | 2天1夜精彩行程 - by 鑫</p>
         </div>
 
@@ -423,24 +636,26 @@
                 <div class="activity-time">🕖 7:00</div>
                 <div class="activity-title">抵达蒙多基里，享用早餐</div>
                 <div class="activity-description">经过一夜车程，在Sen Monorom镇中心补充能量</div>
+                <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/75/f5/cd/welcome-to-bamboo-cafe.jpg?w=600&h=-1&s=1" alt="Sen Monorom早餐" class="activity-image">
+                <div class="image-caption">📸 Sen Monorom早餐 - 品尝地道柬埔寨晨间美食</div>
                 <div class="activity-details">
                     <strong>🏆 精选早餐餐厅（4选1）：</strong><br><br>
                     
-                    <strong>1️⃣ អាហារដ្ឋាន សន្តិភាព (Santipheap Restaurant)</strong><br>
-                    • 📍 位置：<a href="https://www.google.com/maps/search/អាហារដ្ឋាន+សន្តិភាព+Sen+Monorom" target="_blank" style="color: #667eea; text-decoration: underline;">Sen Monorom镇中心 📱点击搜索Google地图</a><br>
-                    • 🍽️ 特色：柬埔寨传统早餐，本地风味浓厚<br>
-                    • ⏰ 营业：早上6:00开始营业<br>
-                    • 💰 价格：人均3-8美元（经济实惠）<br>
-                    • 🥘 推荐：柬式粥品、法棍三明治、本地咖啡<br>
-                    • 👥 团体：可容纳15-20人，建议提前30分钟到达<br><br>
-                    
-                    <strong>2️⃣ Bamboo Cafe</strong><br>
+                    <strong>1️⃣ Bamboo Cafe</strong><br>
                     • 📍 位置：<a href="https://www.google.com/maps/search/Bamboo+Cafe+Sen+Monorom+Cambodia" target="_blank" style="color: #667eea; text-decoration: underline;">Sen Monorom镇中心 📱点击搜索Google地图</a><br>
                     • 🍽️ 特色：西式早餐与亚洲菜品结合<br>
                     • ⏰ 营业：早上7:00开始营业<br>
                     • 💰 价格：人均5-12美元<br>
                     • ☕ 推荐：英式早餐、煎蛋卷、现磨咖啡<br>
                     • 👥 团体：环境舒适，适合团体聚餐<br><br>
+
+                    <strong>2️⃣ អាហារដ្ឋាន សន្តិភាព (Santipheap Restaurant)</strong><br>
+                    • 📍 位置：<a href="https://www.google.com/maps/search/អាហារដ្ឋាន+សន្តិភាព+Sen+Monorom" target="_blank" style="color: #667eea; text-decoration: underline;">Sen Monorom镇中心 📱点击搜索Google地图</a><br>
+                    • 🍽️ 特色：柬埔寨传统早餐，本地风味浓厚<br>
+                    • ⏰ 营业：早上6:00开始营业<br>
+                    • 💰 价格：人均3-8美元（经济实惠）<br>
+                    • 🥘 推荐：柬式粥品、法棍三明治、本地咖啡<br>
+                    • 👥 团体：可容纳15-20人，建议提前30分钟到达<br><br>
                     
                     <strong>3️⃣ The Hangout</strong><br>
                     • 📍 位置：<a href="https://www.google.com/maps/search/The+Hangout+Sen+Monorom+Cambodia" target="_blank" style="color: #667eea; text-decoration: underline;">Sen Monorom镇中心 📱点击搜索Google地图</a><br>
@@ -473,6 +688,8 @@
                 <div class="activity-time">🕘 9:00</div>
                 <div class="activity-title">前往布斯拉瀑布（Bou Sra Waterfall）</div>
                 <div class="activity-description">蒙多基里最著名的瀑布，三层结构壮观景色</div>
+                <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/f5/db/44/photo1jpg.jpg?w=800&h=-1&s=1" alt="布斯拉瀑布" class="activity-image">
+                <div class="image-caption">📸 布斯拉瀑布 - 蒙多基里最壮观的三层瀑布</div>
                 <div class="activity-details">
                     <strong>体验亮点：</strong><br>
                     • 📍 位置：<a href="https://www.google.com/maps/search/Bou+Sra+Waterfall+Mondulkiri+Cambodia" target="_blank" style="color: #667eea; text-decoration: underline;">Bou Sra Waterfall 📱点击搜索Google地图</a><br>
@@ -487,6 +704,8 @@
                 <div class="activity-time">🕛 12:30</div>
                 <div class="activity-title">瀑布附近午餐</div>
                 <div class="activity-description">品尝地道高原风味美食</div>
+                <img src="https://i.ytimg.com/vi/P8napBCNXf8/hqdefault.jpg" alt="高原午餐" class="activity-image">
+                <div class="image-caption">📸 高原风味午餐 - 瀑布边的地道美食体验</div>
                 <div class="activity-details">
                     <strong>推荐美食：</strong><br>
                     • 烤鸡配当地香料<br>
@@ -500,6 +719,8 @@
                 <div class="activity-time">🕑 14:00</div>
                 <div class="activity-title">游览德罗阁萝盟山</div>
                 <div class="activity-description">探索蒙多基里著名的德罗阁萝盟山，体验壮丽的山景和自然风光</div>
+                <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0c/09/0a/6d/one-side-of-the-wooden.jpg?w=700&h=-1&s=1" alt="德罗阁萝盟山" class="activity-image">
+                <div class="image-caption">📸 德罗阁萝盟山 - 蒙多基里壮美的高原山景</div>
                 <div class="activity-details">
                     <strong>德罗阁萝盟山 体验：</strong><br>
                     • 📍 位置：<a href="https://www.google.com/maps/search/德罗阁萝盟山+Mondulkiri+Cambodia" target="_blank" style="color: #667eea; text-decoration: underline;">德罗阁萝盟山 📱点击搜索Google地图</a><br>
@@ -517,6 +738,8 @@
                 <div class="activity-time">🕓 17:00</div>
                 <div class="activity-title">回酒店休息，欣赏夕阳</div>
                 <div class="activity-description">在Pidoma Resort放松身心，享受山丘日落</div>
+                <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/26/22/f0/2b/pidoma-resort.jpg?w=900&h=500&s=1" alt="Pidoma Resort夕阳" class="activity-image">
+                <div class="image-caption">📸 Pidoma Resort - Sen Monorom山丘绚烂夕阳</div>
                 <div class="activity-details">
                     <strong>休闲活动：</strong><br>
                     • 📍 位置：<a href="https://www.google.com/maps/search/Pidoma+Resort+Sen+Monorom+Cambodia" target="_blank" style="color: #667eea; text-decoration: underline;">Pidoma Resort 📱点击搜索Google地图</a><br>
@@ -530,11 +753,24 @@
             <div class="activity">
                 <div class="activity-time">🕖 18:30</div>
                 <div class="activity-title">Sen Monorom镇中心晚餐体验</div>
-                <div class="activity-description">精选3家镇中心优质餐厅，适合15人团体用餐</div>
+                <div class="activity-description">精选4家镇中心优质餐厅，适合15人团体用餐</div>
+                <img src="https://cambodiagaylife.com/wp-content/uploads/2021/09/%E7%89%9B%E8%A7%92%E7%87%92%E8%82%89-%E6%97%A5%E5%BC%8F-Gyu-Kaku-Cambodia-%E6%9F%AC%E5%9F%94%E5%AF%A8%E9%87%91%E9%82%8A-Cambodia-%E9%87%91%E9%82%8A%E9%A4%90%E5%BB%B3%E6%8E%A8%E8%96%A6-%E7%BE%8E%E9%A3%9F-%E7%83%A4%E8%82%89Mr.KJ-%E6%97%85%E9%81%8A%E7%94%9F%E6%B4%BB%E7%B4%80%E9%8C%84-15-1024x682.jpg" alt="Sen Monorom晚餐" class="activity-image">
+                <div class="image-caption">📸 Sen Monorom晚餐 - 品味正宗柬埔寨料理</div>
                 <div class="activity-details">
-                    <strong>🏆 精选Sen Monorom晚餐餐厅（适合16人团体，3选1）：</strong><br><br>
+                    <strong>🏆 精选Sen Monorom晚餐餐厅（适合16人团体，4选1）：</strong><br><br>
                     
-                    <strong>1️⃣ MP Restaurant</strong><br>
+                    <strong>1️⃣ ស្រី​ ល័ក្ខ​ ( S L ) សាច់អាំងទឹកកាពិ​ និង​ បបរពងទាកូន</strong><br>
+                    • 📍 位置：<a href="https://www.google.com/maps/search/ស្រី​+ល័ក្ខ​+S+L+សាច់អាំងទឹកកាពិ​+និង​+បបរពងទាកូន+Sen+Monorom+Cambodia" target="_blank" style="color: #667eea; text-decoration: underline;">Sen Monorom镇中心 �点击搜索Google地图</a><br>
+                    • 🍽️ 特色：正宗柬式烧烤专门店，本地烤肉人气餐厅<br>
+                    • ⭐ 评价：以烤肉和鸭仔蛋闻名的传统餐厅<br>
+                    • 👥 团体：家庭式经营，16人用餐需提前安排<br>
+                    • 💰 价格：人均5-10美元（超高性价比）<br>
+                    • 🔥 招牌菜：សាច់អាំង烤肉、បបរពងទាកូន鸭仔蛋、传统蘸酱<br>
+                    • 🏛️ 特色：最地道的Sen Monorom街头美食体验<br>
+                    • 📞 建议当天下午实地确认座位安排<br>
+                    • 💡 注意：纯本地餐厅，可能需要简单高棉语或手势沟通<br><br>
+
+                    <strong>2️⃣ MP Restaurant</strong><br>
                     • 📍 位置：<a href="https://www.google.com/maps/search/F6F5%2BCPX+Krong+Saen+Monourom" target="_blank" style="color: #667eea; text-decoration: underline;">F6F5+CPX, Krong Saen Monourom 📱点击搜索Google地图</a><br>
                     • 🍽️ 特色：本地风味与现代料理结合<br>
                     • ⭐ 评价：当地人推荐的热门餐厅<br>
@@ -543,7 +779,7 @@
                     • 🥘 推荐：当地特色菜、烤肉系列、新鲜蔬菜<br>
                     • 📞 建议提前2-3小时预约16人座位<br><br>
                     
-                    <strong>2️⃣ ភោជនីយដ្ឋានមនោរម្យ (Monorom Restaurant)</strong><br>
+                    <strong>3️⃣ ភោជនីយដ្ឋានមនោរម្យ (Monorom Restaurant)</strong><br>
                     • 📍 位置：<a href="https://www.google.com/maps/search/F52M%2BGFQ+Near+Krong+Saen+Monourom+110503" target="_blank" style="color: #667eea; text-decoration: underline;">F52M+GFQ, Near Krong Saen Monourom 📱点击搜索Google地图</a><br>
                     • 🍽️ 特色：正宗柬埔寨料理，传统家常菜<br>
                     • ⭐ 评价：本地老字号餐厅，口味地道<br>
@@ -553,7 +789,7 @@
                     • 🏛️ 特色：体验最纯正的Sen Monorom本地用餐文化<br>
                     • 📞 建议下午先去确认16人用餐安排<br><br>
                     
-                    <strong>3️⃣ Pidoma Resort 酒店晚餐</strong><br>
+                    <strong>4️⃣ Pidoma Resort 酒店晚餐</strong><br>
                     • 📍 位置：<a href="https://www.google.com/maps/search/Pidoma+Resort+Sen+Monorom+Cambodia" target="_blank" style="color: #667eea; text-decoration: underline;">直接在住宿酒店用餐 📱点击搜索Google地图</a><br>
                     • 🍽️ 特色：度假村西式晚餐配柬式风味<br>
                     • ⭐ 优势：最便捷选择，无需外出<br>
@@ -563,10 +799,11 @@
                     • 🌅 特色：山丘夜景，星空下用餐体验<br>
                     • ✨ 优势：用餐后直接回房休息，最省时省力<br><br>
                     
-                    💡 <strong>晚餐建议：</strong><br>
+                    �💡 <strong>晚餐建议：</strong><br>
                     • MP Restaurant性价比高，适合尝试当地创新菜<br>
                     • ភោជនីយដ្ឋានមនោរម្យ最地道，体验传统柬埔寨家常菜<br>
                     • Pidoma Resort最便利，享受度假村私密用餐<br>
+                    • ស្រី​ ល័ក្ខ​ ( S L )最本土，体验真正的Sen Monorom街头美食<br>
                     • 点击上方链接可直接在新窗口搜索Google地图位置<br>
                     • 建议根据团队预算和体验喜好选择<br>
                     • 所有选择都需提前确认16人团体用餐安排
@@ -577,6 +814,8 @@
                 <div class="activity-time">🕘 20:30</div>
                 <div class="activity-title">篝火夜晚 / 卡拉OK时光</div>
                 <div class="activity-description">团队联谊，星空下的欢声笑语</div>
+                <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2c/da/b3/1d/caption.jpg?w=1000&h=-1&s=1" alt="篝火夜晚" class="activity-image">
+                <div class="image-caption">📸 度假村篝火夜晚 - 星空下的团队狂欢</div>
                 <div class="activity-details">
                     <strong>夜晚活动：</strong><br>
                     • 📍 位置：<a href="https://www.google.com/maps/search/Pidoma+Resort+Sen+Monorom+Cambodia" target="_blank" style="color: #667eea; text-decoration: underline;">Pidoma Resort 📱点击搜索Google地图</a><br>
@@ -598,6 +837,8 @@
                 <div class="activity-time">🕖 7:30</div>
                 <div class="activity-title">大象保护中心体验</div>
                 <div class="activity-description">Elephant Valley Project半日游 - 观察退休大象的自然行为（周日营业）</div>
+                <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0d/99/19/32/feeding-sophie.jpg?w=1100&h=-1&s=1" alt="大象保护中心" class="activity-image">
+                <div class="image-caption">📸 Elephant Valley Project - 观察亚洲象的自然生活</div>
                 <div class="activity-details">
                     <strong>半日游体验包含：</strong><br>
                     • 📍 位置：<a href="https://www.google.com/maps/search/Elephant+Valley+Project+Sen+Monorom+Cambodia" target="_blank" style="color: #667eea; text-decoration: underline;">Elephant Valley Project 📱点击搜索Google地图</a><br>
@@ -616,6 +857,8 @@
                 <div class="activity-time">🕑 14:30</div>
                 <div class="activity-title">咖啡厅下午茶时光</div>
                 <div class="activity-description">品尝Sen Monorom当地特色咖啡，享受悠闲下午茶时光</div>
+                <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="蒙多基里咖啡" class="activity-image">
+                <div class="image-caption">📸 蒙多基里咖啡下午茶 - 品味高原精品咖啡</div>
                 <div class="activity-details">
                     <strong>🏆 精选咖啡厅下午茶（3选1）：</strong><br><br>
                     
@@ -661,6 +904,8 @@
                 <div class="activity-time">🕒 15:30</div>
                 <div class="activity-title">市中心打卡 & 购物</div>
                 <div class="activity-description">参观大象雕像地标，采购当地特产</div>
+                <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4nrZ7BmqL7BGaIDOxpzaF8oWABizJAgJrdWSQvYimbUtiUItTbv9drrWAU-BCv0DkC_BzguRK5n74q3ZB4q4F3rO2PJbNLJ3sbcBBzUT-xBOpD4nYMQsVwKKy66dL35SKEtlIqNp=w426-h240-k-no" alt="Sen Monorom市中心" class="activity-image">
+                <div class="image-caption">📸 Sen Monorom市中心 - 大象雕像地标和特产购物</div>
                 <div class="activity-details">
                     <strong>必打卡：</strong><br>
                     • 蒙多基里圆环大象雕像<br>
@@ -675,6 +920,8 @@
                 <div class="activity-time">🕔 17:00</div>
                 <div class="activity-title">准备返程</div>
                 <div class="activity-description">整装待发，踏上回金边的旅程</div>
+                <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="返程路途" class="activity-image">
+                <div class="image-caption">📸 返程之路 - 带着美好回忆回到金边</div>
                 <div class="activity-details">
                     <strong>返程准备：</strong><br>
                     • 轻食外带（面包、果汁、炸鸡）<br>
@@ -927,6 +1174,43 @@
         window.gm_authFailure = function() {
             document.getElementById('map').innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">地图加载失败，请检查API密钥设置</div>';
         };
+
+        // 图片轮播功能
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const indicators = document.querySelectorAll('.indicator');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            // 隐藏所有幻灯片
+            slides.forEach(slide => slide.classList.remove('active'));
+            indicators.forEach(indicator => indicator.classList.remove('active'));
+
+            // 显示当前幻灯片
+            slides[index].classList.add('active');
+            indicators[index].classList.add('active');
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        // 自动播放轮播
+        setInterval(nextSlide, 4000); // 每4秒切换一张图片
+
+        // 添加指示器点击事件
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                currentSlide = index;
+                showSlide(currentSlide);
+            });
+        });
+
+        // 页面加载完成后启动轮播
+        document.addEventListener('DOMContentLoaded', function() {
+            showSlide(0);
+        });
     </script>
 </body>
 </html>
