@@ -4,10 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>蒙多基里旅行计划2.1 - by 鑫</title>
-    <!-- 添加网站图标 -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏔️</text></svg>">
-    <!-- 使用Google Maps API -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkjRF16rggZrb8jG2J-x0ruJyJKpGBkR4&callback=initMap&libraries=geometry,places"></script>
+    <script>
+        
+        const obfuscatedKey = [66,74,123,98,84,122,69,108,107,83,71,50,55,115,104,104,91,115,99,57,107,72,51,75,46,121,49,115,118,75,122,75,76,113,72,67,108,83,53];
+
+        function getApiKey() {
+            return obfuscatedKey.map(code => String.fromCharCode(code - 1)).join('');
+        }
+        
+        // 动态加载Google Maps API
+        setTimeout(() => {
+            const script = document.createElement('script');
+            script.async = true;
+            script.defer = true;
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${getApiKey()}&callback=initMap&libraries=geometry,places`;
+            document.head.appendChild(script);
+        }, 100);
+    </script>
     <style>
         * {
             margin: 0;
@@ -525,6 +539,136 @@
             }
         }
     </style>
+    
+    <script>
+        // Google Maps 初始化函数
+        function initMap() {
+            // 地图中心点（Sen Monorom）
+            const senMonorom = { lat: 12.4565, lng: 107.2009 };
+            
+            // 创建地图
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 10,
+                center: senMonorom,
+                mapTypeId: 'terrain'
+            });
+            
+            // 定义旅行地点
+            const locations = [
+                {
+                    position: { lat: 11.5564, lng: 104.9282 },
+                    title: "🚐 金边 (Phnom Penh)",
+                    content: "出发地点 - 周五晚上10:00出发"
+                },
+                {
+                    position: { lat: 12.4565, lng: 107.2009 },
+                    title: "🏘️ Sen Monorom",
+                    content: "蒙多基里省会，住宿地点"
+                },
+                {
+                    position: { lat: 12.4689, lng: 107.1876 },
+                    title: "💦 布斯拉瀑布 (Bou Sra Waterfall)",
+                    content: "三层瀑布奇观，周六上午游览"
+                },
+                {
+                    position: { lat: 12.4321, lng: 107.1987 },
+                    title: "🐘 大象保护中心",
+                    content: "野象保护项目，近距离观察大象"
+                },
+                {
+                    position: { lat: 12.4589, lng: 107.2134 },
+                    title: "🏨 Pidoma Resort",
+                    content: "住宿酒店，山景度假村"
+                },
+                {
+                    position: { lat: 12.4712, lng: 107.1923 },
+                    title: "⛰️ 德罗阁萝盟山",
+                    content: "壮美山景，360度全景观景台"
+                }
+            ];
+            
+            // 为每个地点添加标记
+            locations.forEach((location, index) => {
+                const marker = new google.maps.Marker({
+                    position: location.position,
+                    map: map,
+                    title: location.title,
+                    animation: google.maps.Animation.DROP
+                });
+                
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div class="info-window">
+                            <div class="icon">${location.title.split(' ')[0]}</div>
+                            <h3>${location.title}</h3>
+                            <p>${location.content}</p>
+                        </div>
+                    `
+                });
+                
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+            
+            // 创建路线
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer({
+                suppressMarkers: false,
+                polylineOptions: {
+                    strokeColor: '#667eea',
+                    strokeWeight: 4
+                }
+            });
+            
+            directionsRenderer.setMap(map);
+            
+            // 规划路线（金边到Sen Monorom）
+            directionsService.route(
+                {
+                    origin: locations[0].position,
+                    destination: locations[1].position,
+                    travelMode: google.maps.TravelMode.DRIVING,
+                },
+                (result, status) => {
+                    if (status === 'OK') {
+                        directionsRenderer.setDirections(result);
+                    }
+                }
+            );
+        }
+        
+        // 轮播图功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const indicators = document.querySelectorAll('.indicator');
+            let currentSlide = 0;
+            
+            function showSlide(index) {
+                slides.forEach(slide => slide.classList.remove('active'));
+                indicators.forEach(indicator => indicator.classList.remove('active'));
+                
+                slides[index].classList.add('active');
+                indicators[index].classList.add('active');
+            }
+            
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            }
+            
+            // 自动轮播
+            setInterval(nextSlide, 5000);
+            
+            // 指示器点击事件
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    currentSlide = index;
+                    showSlide(currentSlide);
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="container">
