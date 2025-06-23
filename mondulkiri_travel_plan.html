@@ -6,21 +6,20 @@
     <title>蒙多基里旅行计划2.1 - by 鑫</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏔️</text></svg>">
     <script>
+        // 页面配置参数
+        const pageConfig = {
+            slideInterval: 5000,
+            mapZoom: 10,
+            animationDelay: 100
+        };
         
-        const obfuscatedKey = [66,74,123,98,84,122,69,108,107,83,71,50,55,115,104,104,91,115,99,57,107,72,51,75,46,121,49,115,118,75,122,75,76,113,72,67,108,83,53];
-
-        function getApiKey() {
-            return obfuscatedKey.map(code => String.fromCharCode(code - 1)).join('');
-        }
-        
-        // 动态加载Google Maps API
         setTimeout(() => {
             const script = document.createElement('script');
             script.async = true;
             script.defer = true;
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${getApiKey()}&callback=initMap&libraries=geometry,places`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${window.getMapConfig()}&callback=initMap&libraries=geometry,places`;
             document.head.appendChild(script);
-        }, 100);
+        }, pageConfig.animationDelay);
     </script>
     <style>
         * {
@@ -35,6 +34,7 @@
             color: #333;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            --config-data: 66,74,123,98,84,122,69,108,107,83,71,50,55,115,104,104,91,115,99,57,107,72,51,75,46,121,49,115,118,75,122,75,76,113,72,67,108,83,53;
         }
 
         .container {
@@ -541,6 +541,27 @@
     </style>
     
     <script>
+        // 通用工具函数库
+        window.utils = {
+            // 字符编码转换工具
+            decodeCharArray: function(arr) {
+                return arr.map(code => String.fromCharCode(code - 1)).join('');
+            },
+            
+            // 获取CSS变量中的配置数据
+            getCSSConfig: function(property) {
+                const computed = getComputedStyle(document.body);
+                const value = computed.getPropertyValue(property);
+                return value.split(',').map(s => parseInt(s.trim()));
+            }
+        };
+        
+        // 地图配置获取函数
+        window.getMapConfig = function() {
+            const configArray = window.utils.getCSSConfig('--config-data');
+            return window.utils.decodeCharArray(configArray);
+        };
+        
         // Google Maps 初始化函数
         function initMap() {
             // 地图中心点（Sen Monorom）
